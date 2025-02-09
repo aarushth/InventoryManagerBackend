@@ -4,3 +4,4 @@
 ## 3. clone repository and open in vscode
 ## 4. open terminal and run 'cd demo', then 'gradle bootRun'
 ## 5. verify server is running by opening 'localhost:8080' in a browser. You should see "Greetings from spring boot!"
+## 6. to exit/restart server press 'CTRL+C' then type 'Y' and enter. run again by running 'gradle bootRun'
