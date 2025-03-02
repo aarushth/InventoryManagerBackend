@@ -3,7 +3,7 @@ package com.leopardseal.inventorymanager.Entity;
 import java.io.Serializable;
 
 import org.springframework.data.annotation.Id;
-import jakarta.persistence.GeneratedValue;
+
 import jakarta.persistence.IdClass;
 
 @IdClass(UserRoles.class)
