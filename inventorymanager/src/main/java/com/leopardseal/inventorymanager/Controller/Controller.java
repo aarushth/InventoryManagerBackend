@@ -80,11 +80,13 @@ public class Controller {
 		return "Greetings from Spring Boot!";
 	}
 
-	@RequestMapping("/signIn")
-	public ResponseEntity signIn(@RequestHeader(HttpHeaders.AUTHORIZATION) String googleIdToken){
+//@RequestParam("authToken") String googleIdToken
+	@RequestMapping("/login")
+	public ResponseEntity login(){
 		// GoogleIdToken idToken = verifier.verify(googleIdToken);
 		// if (idToken != null) {
 			// Payload payload = idToken.getPayload();
+			
 		MyUsers myUser = cUser.getCurrentUser();
 		
 		if(myUser == null){
@@ -127,7 +129,6 @@ public class Controller {
 		result.put("roles", roles);
 		return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
 	}
-
 
 	//Auto token verifier
 	public static class MyException extends RuntimeException {}
@@ -174,8 +175,8 @@ public class Controller {
 				}
 			} catch (GeneralSecurityException | IOException e) {
 				throw new MyException();
-			}
-			return true;
+		}
+		return true
         }
     }
 
