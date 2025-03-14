@@ -74,7 +74,7 @@ public class Controller {
 	
 	
     
-	@GetMapping("/")
+	@GetMapping("/test")
 	public String index() {
 		System.out.println("test");
 		return "Greetings from Spring Boot!";
@@ -86,7 +86,7 @@ public class Controller {
 		// GoogleIdToken idToken = verifier.verify(googleIdToken);
 		// if (idToken != null) {
 			// Payload payload = idToken.getPayload();
-			
+		System.out.println("inFunct");
 		MyUsers myUser = cUser.getCurrentUser();
 		
 		if(myUser == null){
@@ -176,7 +176,7 @@ public class Controller {
 			} catch (GeneralSecurityException | IOException e) {
 				throw new MyException();
 		}
-		return true
+		return true;
         }
     }
 
