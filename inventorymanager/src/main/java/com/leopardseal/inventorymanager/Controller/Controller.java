@@ -2,25 +2,22 @@ package com.leopardseal.inventorymanager.Controller;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
+
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
+
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.HandlerInterceptor;
-
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
+import org.springframework.web.servlet.support.RequestContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.http.HttpHeaders;
+
 import org.springframework.http.HttpStatus;
 
 import org.springframework.http.ResponseEntity;
@@ -31,116 +28,41 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
+import com.leopardseal.inventorymanager.Entity.MyUsers;
 import com.leopardseal.inventorymanager.Repository.*;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import com.leopardseal.inventorymanager.Entity.*;
 @RestController
 public class Controller {
-	@Component
-	@Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
-	public class CurrentUser {
-		private MyUsers currentUser;
-
-		public MyUsers getCurrentUser() {
-			return currentUser;
-		}
-
-		public void setCurrentUser(MyUsers currentUser) {
-			this.currentUser = currentUser;
-		}
-	}
-	
-	CurrentUser cUser = new CurrentUser();
-
-	@Autowired
-    private MyUserRepository myUsersRepository;
-
-	@Autowired
-    private ImagesRepository imagesRepository;
-
-	@Autowired
-    private OrgsRepository orgsRepository;
-	
-	@Autowired
-    private UserRolesRepository userRolesRepository;
-
-	@Autowired
-    private RolesRepository rolesRepository;
-
-	// @Autowired
 	
 	
-    
-	@GetMapping("/test")
-	public String index() {
-		System.out.println("test");
-		return "Greetings from Spring Boot!";
-	}
+	// private final CurrentUser currentUser;
+	// public Controller(CurrentUser currentUser){
+	// 	this.currentUser = currentUser;
+	// }
 
-//@RequestParam("authToken") String googleIdToken
-	@RequestMapping("/login")
-	public ResponseEntity login(){
-		// GoogleIdToken idToken = verifier.verify(googleIdToken);
-		// if (idToken != null) {
-			// Payload payload = idToken.getPayload();
-		System.out.println("inFunct");
-		MyUsers myUser = cUser.getCurrentUser();
-		
-		if(myUser == null){
-			return new ResponseEntity(HttpStatus.NOT_FOUND);
-		}
-		
-
-		List<UserRoles> userRolesList = userRolesRepository.findByUserId(myUser.getId());
-		if(userRolesList.size() == 0){
-			// return new ResponseEntity(HttpStatus.NOT_FOUND);
-		}
-		List<Orgs> orgs = new ArrayList<Orgs>();
-		List<Images> images = new ArrayList<Images>();
-		for(UserRoles userRole:userRolesList){
-			//get orgs
-			try{
-				Orgs org = orgsRepository.findById(userRole.getOrgId()).get();
-				orgs.add(org);
-				if(org.getImageId() != null){
-					images.add(imagesRepository.findById(org.getImageId()).get());
-				}
-			}catch(NoSuchElementException e){
-				System.out.println("org " + userRole.getOrgId() + " DoesntExist! oops");
-			}
-			
-		}
-		Iterable<Roles> roles = rolesRepository.findAll();
-			
-			// String userId = payload.getSubject();
-			// String email = payload.getEmail();
-			// boolean emailVerified = Boolean.valueOf(payload.getEmailVerified());
-			// String name = (String) payload.get("name");
-			// String pictureUrl = (String) payload.get("picture");
-			// System.out.println(pictureUrl);
-		Map<String, Object> result = new HashMap<String,Object>();
-		result.put("myUser", myUser);
-		result.put("userRoles", userRolesList);
-		result.put("orgs", orgs);
-		result.put("images", images);
-		result.put("roles", roles);
-		return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
-	}
+	@Autowired
+    private MyUserRepository myUsersRepository;	
 
 	//Auto token verifier
-	public static class MyException extends RuntimeException {}
+	public static class MyException extends RuntimeException {
+		private static Logger logger = LoggerFactory.getLogger(MyException.class);
+		public MyException(String msg){
+			super();
+			logger.info(msg);
+		}
+	}
 	static GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
 	.setAudience(Collections.singletonList("354946788079-aermo39q0o3gshsgf46oqhkicovqcuo8.apps.googleusercontent.com"))
     .build();
 	
-   @Configuration
+   	@Configuration
 	public class WebConfiguration implements WebMvcConfigurer {
 		@Override
 		public void addInterceptors(InterceptorRegistry registry) {
-			registry.addInterceptor(new MyHandlerInterceptor(cUser));
+			registry.addInterceptor(new MyHandlerInterceptor());
 		}
 	}
 
@@ -150,34 +72,47 @@ public class Controller {
 
 		
 		@Autowired
-		MyHandlerInterceptor(CurrentUser currentUser) {
-			this.currentUser = currentUser;
+		MyHandlerInterceptor() {
+			// this.currentUser = currentUser;
 		}
-		private CurrentUser currentUser;
+		// private CurrentUser currentUser;
 
         @Override
         public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)throws Exception {
-			String googleIdToken = request.getHeader("Authorization");
+			
 			try {
+				String googleIdToken = request.getHeader("Authorization");
 				GoogleIdToken idToken = verifier.verify(googleIdToken);
 				if (idToken == null) {
-					throw new MyException();
+					throw new MyException("invalid token");
 				}
 				Payload payload = idToken.getPayload();
-				if(!myUsersRepository.existsByEmail(payload.getEmail())){
-					throw new MyException();
+				// if(!myUsersRepository.existsByEmail(payload.getEmail())){
+				// 	
+				// }
+				MyUsers user = myUsersRepository.findByEmail(payload.getEmail());
+				if(user == null){
+					throw new MyException("user not in system");
 				}
-				
-				currentUser.setCurrentUser(myUsersRepository.findByEmail(payload.getEmail()));
-				if(currentUser.getCurrentUser().getPicture() == null){
-					currentUser.getCurrentUser().setPicture((String) payload.get("picture"));
-					myUsersRepository.save(currentUser.getCurrentUser());
+				// System.out.println(user.getEmail());
+				if(user.getPicture() == null){
+					user.setPicture((String) payload.get("picture"));
+					myUsersRepository.save(user);
 				}
+				request.setAttribute("userId", user.getId());
+      			// request.setAttribute("userId", user.getId());
+				// LoggedUserContext.setCurrentLoggedUser(user);
 			} catch (GeneralSecurityException | IOException e) {
-				throw new MyException();
-		}
+				throw new MyException("general security exception");
+			}catch(Exception e){
+				throw new MyException("No Auth token");
+			}
 		return true;
         }
+
+		@Override
+		public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+		}
     }
 
     @ControllerAdvice
@@ -188,7 +123,4 @@ public class Controller {
             return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         }
     }
-
-
-
 }

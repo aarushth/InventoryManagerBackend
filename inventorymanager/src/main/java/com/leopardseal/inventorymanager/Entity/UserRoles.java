@@ -1,12 +1,20 @@
 package com.leopardseal.inventorymanager.Entity;
 
 import java.io.Serializable;
+import java.util.List;
 
 import org.springframework.data.annotation.Id;
 
-import jakarta.persistence.IdClass;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 
-@IdClass(UserRoles.class)
+
+@Entity
 public class UserRoles implements Serializable{
 
     public UserRoles() {
@@ -20,6 +28,7 @@ public class UserRoles implements Serializable{
     }
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private Long userId;
@@ -29,12 +38,19 @@ public class UserRoles implements Serializable{
     
     private Long roleId;
 
+    @ManyToMany(targetEntity = Orgs.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "org_id", referencedColumnName =  "id")
+    private Orgs org;
+
     public Long getId(){
         return id;
     }
 
     public Long getOrgId() {
         return orgId;
+    }
+    public Orgs getOrg() {
+        return org;
     }
     public Long getRoleId() {
         return roleId;

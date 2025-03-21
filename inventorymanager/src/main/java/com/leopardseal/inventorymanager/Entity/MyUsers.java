@@ -2,6 +2,11 @@ package com.leopardseal.inventorymanager.Entity;
 
 import org.springframework.data.annotation.Id;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+
+@Entity
 public class MyUsers {
 
     public MyUsers() {
@@ -14,6 +19,7 @@ public class MyUsers {
     }
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String email;

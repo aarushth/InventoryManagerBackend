@@ -1,7 +1,6 @@
 DROP TABLE IF EXISTS user_roles;
 DROP TABLE IF EXISTS orgs;
 DROP TABLE IF EXISTS my_users;
-DROP TABLE IF EXISTS images;
 DROP TABLE IF EXISTS roles;
 CREATE TABLE my_users(
     id INT IDENTITY PRIMARY KEY,
@@ -10,23 +9,16 @@ CREATE TABLE my_users(
 );
 
 
-CREATE TABLE images(
-    id INT IDENTITY PRIMARY KEY,
-    img image NOT NULL
-)
-
 CREATE TABLE roles(
     id INT IDENTITY PRIMARY KEY,
     role VARCHAR(32) NOT NULL
 );
 
 
-
 CREATE TABLE orgs(
     id INT IDENTITY PRIMARY KEY,
     name VARCHAR(64) NOT NULL,
-    image_id INT,
-    FOREIGN KEY(image_id) REFERENCES images(id)
+    image_id TEXT,
 );
 
 
