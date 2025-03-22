@@ -15,32 +15,33 @@ import jakarta.persistence.OneToMany;
 
 
 @Entity
+@IdClass(UserRolesKey.class)
 public class UserRoles implements Serializable{
 
     public UserRoles() {
     }
 
-    public UserRoles(Long id, Long userId, Long orgId, Long roleId) {
-        this.id = id;
+    public UserRoles(Long userId, Long orgId, Long roleId) {
         this.userId = userId;
         this.orgId = orgId;
         this.roleId = roleId;
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     private Long userId;
     
-    
+    @Id
     private Long orgId;
     
     private Long roleId;
 
-    @ManyToMany(targetEntity = Orgs.class, cascade = CascadeType.ALL)
-    @JoinColumn(name = "org_id", referencedColumnName =  "id")
+    @ManyToOne
+    @JoinColumn(name = "org_id")
     private Orgs org;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private MyUsers myUser;
 
     public Long getId(){
         return id;

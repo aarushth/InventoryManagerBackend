@@ -30,6 +30,9 @@ public class Orgs {
 
     private String imageUrl;
 
+    @OneToMany(mappedBy = "orgs")
+    Set<UserRoles> userRoles;
+
     public Long getId(){
         return id;
     }

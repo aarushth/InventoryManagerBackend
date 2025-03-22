@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 
 @Entity
+
 public class MyUsers {
 
     public MyUsers() {
@@ -25,6 +26,9 @@ public class MyUsers {
     private String email;
 
     private String picture;
+
+    @OneToMany(mappedBy = "myUser")
+    Set<MyUsers> myUser;
 
     public Long getId(){
         return id;

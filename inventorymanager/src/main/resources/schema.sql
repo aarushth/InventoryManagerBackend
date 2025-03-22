@@ -2,6 +2,7 @@ DROP TABLE IF EXISTS user_roles;
 DROP TABLE IF EXISTS orgs;
 DROP TABLE IF EXISTS my_users;
 DROP TABLE IF EXISTS roles;
+DROP TABLE IF EXISTS invites;
 CREATE TABLE my_users(
     id INT IDENTITY PRIMARY KEY,
     email VARCHAR(64) NOT NULL,
@@ -23,6 +24,16 @@ CREATE TABLE orgs(
 
 
 CREATE TABLE user_roles(
+    user_id INT NOT NULL,
+    org_id INT NOT NULL,
+    role_id INT NOT NULL,
+    FOREIGN KEY(user_id) REFERENCES my_users(id),
+    FOREIGN KEY(org_id) REFERENCES orgs(id),
+    FOREIGN KEY(role_id) REFERENCES roles(id),
+    PRIMARY KEY(user_id, org_id)
+);
+
+CREATE TABLE invites(
     id INT IDENTITY PRIMARY KEY,
     user_id INT NOT NULL,
     org_id INT NOT NULL,
