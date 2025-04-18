@@ -1,62 +1,36 @@
 package com.leopardseal.inventorymanager.Entity;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.data.annotation.Id;
 
-import jakarta.persistence.CascadeType;
+import com.leopardseal.inventorymanager.Entity.CompositeKey.UserRolesKey;
+
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+
+import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 
 
 @Entity
-@IdClass(UserRolesKey.class)
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class UserRoles implements Serializable{
 
-    public UserRoles() {
-    }
-
-    public UserRoles(Long userId, Long orgId, Long roleId) {
-        this.userId = userId;
-        this.orgId = orgId;
-        this.roleId = roleId;
-    }
-
-    @Id
-    private Long userId;
-    
-    @Id
-    private Long orgId;
+    @EmbeddedId
+    private UserRolesKey userRolesKey;
     
     private Long roleId;
 
-    @ManyToOne
-    @JoinColumn(name = "org_id")
-    private Orgs org;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private MyUsers myUser;
-
-    public Long getId(){
-        return id;
-    }
-
-    public Long getOrgId() {
-        return orgId;
-    }
-    public Orgs getOrg() {
-        return org;
-    }
-    public Long getRoleId() {
-        return roleId;
-    }
-    public Long getUserId() {
-        return userId;
-    }
 }

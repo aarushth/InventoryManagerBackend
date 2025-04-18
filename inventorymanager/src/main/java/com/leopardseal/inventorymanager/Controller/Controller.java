@@ -37,7 +37,7 @@ import jakarta.servlet.http.HttpServletResponse;
 @RestController
 public class Controller {
 	
-	
+	private static Logger logger = LoggerFactory.getLogger(Controller.class);
 	// private final CurrentUser currentUser;
 	// public Controller(CurrentUser currentUser){
 	// 	this.currentUser = currentUser;
@@ -90,7 +90,8 @@ public class Controller {
 				// if(!myUsersRepository.existsByEmail(payload.getEmail())){
 				// 	
 				// }
-				MyUsers user = myUsersRepository.findByEmail(payload.getEmail());
+				logger.info(payload.getEmail());
+				MyUsers user = myUsersRepository.findByEmail(payload.getEmail()).get();
 				if(user == null){
 					throw new MyException("user not in system");
 				}
@@ -104,15 +105,11 @@ public class Controller {
 				// LoggedUserContext.setCurrentLoggedUser(user);
 			} catch (GeneralSecurityException | IOException e) {
 				throw new MyException("general security exception");
-			}catch(Exception e){
-				throw new MyException("No Auth token");
+			}catch(MyException e){
+				throw new MyException(e.getMessage());
 			}
 		return true;
         }
-
-		@Override
-		public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-		}
     }
 
     @ControllerAdvice

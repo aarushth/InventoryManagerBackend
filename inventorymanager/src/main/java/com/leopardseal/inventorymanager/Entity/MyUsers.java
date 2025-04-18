@@ -1,45 +1,32 @@
 package com.leopardseal.inventorymanager.Entity;
 
+
 import org.springframework.data.annotation.Id;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 @Entity
-
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class MyUsers {
-
-    public MyUsers() {
-    }
-
-    public MyUsers(Long id, String email, String picture) {
-        this.id = id;
-        this.email = email;
-        this.picture = picture;
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
     private String email;
 
     private String picture;
 
-    @OneToMany(mappedBy = "myUser")
-    Set<MyUsers> myUser;
-
-    public Long getId(){
-        return id;
-    }
-    public String getEmail() {
-        return email;
-    }
-    public String getPicture() {
-        return picture;
-    }
-    public void setPicture(String picture) {
-        this.picture = picture;
-    }
 }

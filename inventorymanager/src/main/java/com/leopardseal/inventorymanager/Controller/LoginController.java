@@ -38,6 +38,7 @@ public class LoginController {
     @GetMapping("/login")
     public ResponseEntity login(@RequestAttribute("userId") String userId){
         // MyUsers loggedUser = LoggedUserContext.getCurrentLoggedUser();
+        logger.info("in login");
         Long id = Long.parseLong(userId);
         Optional<MyUsers> user = null;
         if(myUsersRepository.existsById(id)){

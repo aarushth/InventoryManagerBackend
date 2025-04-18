@@ -1,25 +1,30 @@
 package com.leopardseal.inventorymanager.Entity;
 
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.springframework.data.annotation.Id;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
 @Entity
-
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class Orgs {
-
-    public Orgs() {
-    }
-
-    public Orgs(Long id, String name, String imageUrl) {
-        this.id = id;
-        this.name = name;
-        this.imageUrl = imageUrl;
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,16 +35,4 @@ public class Orgs {
 
     private String imageUrl;
 
-    @OneToMany(mappedBy = "orgs")
-    Set<UserRoles> userRoles;
-
-    public Long getId(){
-        return id;
-    }
-    public String getImageUrl() {
-        return imageUrl;
-    }
-    public String getName() {
-        return name;
-    }
 }
