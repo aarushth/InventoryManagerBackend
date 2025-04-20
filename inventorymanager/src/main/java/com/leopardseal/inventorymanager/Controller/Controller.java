@@ -96,8 +96,8 @@ public class Controller {
 					throw new MyException("user not in system");
 				}
 				// System.out.println(user.getEmail());
-				if(user.getPicture() == null){
-					user.setPicture((String) payload.get("picture"));
+				if(user.getImgUrl() == null){
+					user.setImgUrl((String) payload.get("picture"));
 					myUsersRepository.save(user);
 				}
 				request.setAttribute("userId", user.getId());

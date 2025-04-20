@@ -11,11 +11,11 @@ import org.springframework.stereotype.Repository;
 
 
 @Repository
-public interface UserRolesRepository extends CrudRepository<UserRoles, UserRoles> {
-    // List<UserRoles> findAllByUserId(Long userId);
-    
-    // List<Long> findOrgIdByUserId(Long userId);
+public interface UserRolesRepository extends CrudRepository<UserRoles, Long> {
 
-    @Query("SELECT o.* FROM user_roles ur JOIN orgs o ON ur.org_id = o.id WHERE ur.user_id = :userId")
+    @Query("SELECT o.id, o.name, o.image_url, ro.role FROM user_roles ur JOIN orgs o ON ur.org_id = o.id JOIN roles ro ON ur.role_id = ro.id WHERE ur.user_id = :userId")
     List<Orgs> findAllOrgsByUserId(Long userId);
+
+    Boolean existsByUserIdAndOrgId(Long userId, Long orgId);
+
 }

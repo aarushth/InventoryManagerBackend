@@ -24,9 +24,8 @@ public class MyUsers {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     private String email;
 
-    private String picture;
+    private String imgUrl;
 
 }

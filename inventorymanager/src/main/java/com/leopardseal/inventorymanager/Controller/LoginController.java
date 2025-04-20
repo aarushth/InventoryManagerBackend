@@ -36,19 +36,17 @@ public class LoginController {
 
 
     @GetMapping("/login")
-    public ResponseEntity login(@RequestAttribute("userId") String userId){
-        // MyUsers loggedUser = LoggedUserContext.getCurrentLoggedUser();
-        logger.info("in login");
-        Long id = Long.parseLong(userId);
+    public ResponseEntity login(@RequestAttribute("userId") Long userId){
+        // return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+
         Optional<MyUsers> user = null;
-        if(myUsersRepository.existsById(id)){
-            user = myUsersRepository.findById(id);
+        if(myUsersRepository.existsById(userId)){
+            user = myUsersRepository.findById(userId);
         }
-        logger.info(user.get().getEmail());
         // System.out.println();
         return new ResponseEntity<MyUsers>(user.get(), HttpStatus.OK);
-        // try{
-        //     GoogleIdToken idToken = verifier.verify(googleIdToken);
+        // // try{
+        // //     GoogleIdToken idToken = verifier.verify(googleIdToken);
         //     if (idToken != null) {
         //         Payload payload = idToken.getPayload();
         //         if(!myUsersRepository.existsByEmail(payload.getEmail())){

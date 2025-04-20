@@ -24,22 +24,56 @@ CREATE TABLE orgs(
 
 
 CREATE TABLE user_roles(
+    id INT IDENTITY PRIMARY KEY,
     user_id INT NOT NULL,
     org_id INT NOT NULL,
     role_id INT NOT NULL,
     CONSTRAINT FK_my_users_user_roles FOREIGN KEY(user_id) REFERENCES my_users(id),
     CONSTRAINT FK_orgs_roles FOREIGN KEY(org_id) REFERENCES orgs(id),
-    CONSTRAINT FK_roles_user_roles FOREIGN KEY(role_id) REFERENCES roles(id),
-    PRIMARY KEY(user_id, org_id)
+    CONSTRAINT FK_roles_user_roles FOREIGN KEY(role_id) REFERENCES roles(id)
 );
 
 CREATE TABLE invites(
-    email VARCHAR(64),
+    id INT IDENTITY PRIMARY KEY,
+    user_id INT NOT NULL,
     org_id INT NOT NULL,
     role_id INT NOT NULL,
+    CONSTRAINT FK_users_invites FOREIGN KEY(user_id) REFERENCES my_users(id),
     CONSTRAINT FK_orgs_invites FOREIGN KEY(org_id) REFERENCES orgs(id),
-    CONSTRAINT FK_roles_invites FOREIGN KEY(role_id) REFERENCES roles(id),
-    PRIMARY KEY(email, org_id)
+    CONSTRAINT FK_roles_invites FOREIGN KEY(role_id) REFERENCES roles(id)
+);
+CREATE TABLE locations(
+    id INT IDENTITY PRIMARY KEY,
+    name VARCHAR(64) NOT NULL,
+    org_id INT NOT NULL,
+    barcode VARCHAR(64),
+    description VARCHAR(512),
+    image_url VARCHAR(256),
+    CONSTRAINT FK_orgs_locations FOREIGN KEY(org_id) REFERENCES orgs(id)
+);
+CREATE TABLE boxes(
+    id INT IDENTITY PRIMARY KEY,
+    name VARCHAR(64) NOT NULL,
+    org_id INT NOT NULL,
+    barcode VARCHAR(64),
+    location_id INT,
+    size INT NOT NULL DEFAULT(1),
+    image_url VARCHAR(256),
+    CONSTRAINT FK_orgs_boxes FOREIGN KEY(org_id) REFERENCES orgs(id),
+    CONSTRAINT FK_locations_boxes FOREIGN KEY(location_id) REFERENCES locations(id)
+);
+CREATE TABLE items(
+    id INT IDENTITY PRIMARY KEY,
+    name VARCHAR(64) NOT NULL,
+    org_id INT NOT NULL,
+    barcode VARCHAR(64),
+    description VARCHAR(512),
+    box_id INT,
+    quantity INT NOT NULL,
+    alert INT NOT NULL,
+    image_url VARCHAR(256),
+    CONSTRAINT FK_orgs_items FOREIGN KEY(org_id) REFERENCES orgs(id),
+    CONSTRAINT FK_boxes_items FOREIGN KEY(box_id) REFERENCES boxes(id)
 );
 
 INSERT INTO roles (role) VALUES('admin');

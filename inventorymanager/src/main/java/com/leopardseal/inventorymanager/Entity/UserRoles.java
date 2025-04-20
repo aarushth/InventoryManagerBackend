@@ -1,19 +1,12 @@
 package com.leopardseal.inventorymanager.Entity;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.springframework.data.annotation.Id;
 
-import com.leopardseal.inventorymanager.Entity.CompositeKey.UserRolesKey;
-
-import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
-
-import jakarta.persistence.IdClass;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,11 +19,21 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class UserRoles implements Serializable{
+public class UserRoles{
 
-    @EmbeddedId
-    private UserRolesKey userRolesKey;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
     
+    private Long userId;
+
+    private Long orgId;
+
     private Long roleId;
 
+    public UserRoles(Long userId, Long orgId, Long roleId){
+        this.userId = userId;
+        this.orgId = orgId;
+        this.roleId = roleId;
+    }
 }

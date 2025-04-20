@@ -1,22 +1,17 @@
 package com.leopardseal.inventorymanager.Entity;
 
-
-import java.util.HashSet;
-import java.util.Set;
+import java.io.Serializable;
 
 import org.springframework.data.annotation.Id;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 
 
 @Entity
@@ -24,17 +19,22 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Orgs {
+public class Invites{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    
+    private Long userId;
 
-    private String name;
+    private Long orgId;
 
+    private Long roleId;
 
-    private String imageUrl;
-
-    private String role;
+    public Invites(Long userId, Long orgId, Long roleId){
+        this.userId = userId;
+        this.orgId = orgId;
+        this.roleId = roleId;
+    }
 
 }
