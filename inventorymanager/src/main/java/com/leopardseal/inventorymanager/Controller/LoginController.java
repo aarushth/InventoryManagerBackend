@@ -72,7 +72,7 @@ public class LoginController {
                 myUsersRepository.save(user);
             }
             String jwt = generateJwtToken(user.getEmail());
-            return ResponseEntity.ok(Collections.singletonMap("token", jwt));
+            return new ResponseEntity(HttpStatus.OK, new LoginResponse(jwt, user));
             // request.setAttribute("userId", user.getId());
         } catch (GeneralSecurityException | IOException e) {
             return new ResponseEntity(HttpStatus.UNAUTHORIZED);
