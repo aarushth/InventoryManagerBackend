@@ -3,6 +3,8 @@ package com.leopardseal.inventorymanager.Repository;
 import com.leopardseal.inventorymanager.Entity.Items;
 
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,4 +13,7 @@ import org.springframework.stereotype.Repository;
 public interface ItemsRepository extends CrudRepository<Items, Long> {
     List<Items> findAllItemsByOrgId(Long orgId);
 
+    Optional<Items> findItemById(Long Id);
+
+    
 }

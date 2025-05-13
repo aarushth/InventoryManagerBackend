@@ -1,11 +1,36 @@
+package com.leopardseal.inventorymanager;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+
+
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
     @Value("${app.jwt.secret}")
     private String SECRET_KEY;
 
+
+
     private static final List<String> EXCLUDED_PATHS = List.of(
-        "/login" // Add more as needed
+        "/login"    
     );
 
     @Override
@@ -32,12 +57,13 @@ public class JwtFilter extends OncePerRequestFilter {
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
-
-            String email = claims.getSubject();
+            String email = claims.get("email", String.class);
+            Long userId = claims.get("user_id", Long.class);
+            // request.setAttribute("user_id", userId);
 
             // Set user in SecurityContext
             UsernamePasswordAuthenticationToken auth =
-                    new UsernamePasswordAuthenticationToken(email, null, Collections.emptyList());
+                    new UsernamePasswordAuthenticationToken(userId, null, Collections.emptyList());
 
             SecurityContextHolder.getContext().setAuthentication(auth);
         } catch (JwtException e) {
@@ -48,4 +74,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
         chain.doFilter(request, response);
     }
+
+
 }

@@ -1,4 +1,4 @@
-package com.leopardseal.inventorymanager.dto;
+package com.leopardseal.inventorymanager.Entity.DTO;
 
 import com.leopardseal.inventorymanager.Entity.MyUsers;
 import lombok.AllArgsConstructor;

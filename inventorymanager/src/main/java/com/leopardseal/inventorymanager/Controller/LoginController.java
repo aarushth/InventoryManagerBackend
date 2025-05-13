@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.Map;
 
 import com.leopardseal.inventorymanager.Repository.*;
 
@@ -28,8 +29,8 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
-import com.leopardseal.inventorymanager.Controller.Controller.MyException;
-import com.leopardseal.inventorymanager.Entity.*;
+import com.leopardseal.inventorymanager.Entity.MyUsers;
+import com.leopardseal.inventorymanager.Entity.DTO.LoginResponse;
 
 @RestController
 public class LoginController {
@@ -48,12 +49,14 @@ public class LoginController {
         .setAudience(Collections.singletonList("354946788079-aermo39q0o3gshsgf46oqhkicovqcuo8.apps.googleusercontent.com"))
         .build();
 	
-    @GetMapping("/login")
-    public ResponseEntity login(@RequestHeader("Authorization") String googleIdToken){
+    @PostMapping("/login")
+    public ResponseEntity login(@RequestBody String authToken){
         // return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         try {
-            
-            GoogleIdToken idToken = verifier.verify(googleIdToken);
+            authToken = authToken.replace("\"", "");
+            logger.info("here");
+            logger.info(authToken);
+            GoogleIdToken idToken = verifier.verify(authToken);
             if (idToken == null) {
                 return new ResponseEntity(HttpStatus.UNAUTHORIZED);
             }
@@ -71,12 +74,12 @@ public class LoginController {
                 user.setImgUrl((String) payload.get("picture"));
                 myUsersRepository.save(user);
             }
-            String jwt = generateJwtToken(user.getEmail());
-            return new ResponseEntity(HttpStatus.OK, new LoginResponse(jwt, user));
+            String jwt = generateJwtToken(user.getEmail(), user.getId());
+            return new ResponseEntity<LoginResponse>(new LoginResponse(jwt, user), HttpStatus.OK);
             // request.setAttribute("userId", user.getId());
         } catch (GeneralSecurityException | IOException e) {
             return new ResponseEntity(HttpStatus.UNAUTHORIZED);
-        }catch(MyException e){
+        }catch(Exception e){
             return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         }
         
@@ -84,9 +87,11 @@ public class LoginController {
         
     }
 
-    private String generateJwtToken(String email) {
+    private String generateJwtToken(String email, Long id) {
         return Jwts.builder()
                 .setSubject(email)
+                .claim("email", email)
+                .claim("user_id", id)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_MS))
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()), SignatureAlgorithm.HS256)
