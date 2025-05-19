@@ -1,7 +1,7 @@
-package com.leopardseal.inventorymanager.Repository;
+package com.leopardseal.inventorymanager.repository;
 
-import com.leopardseal.inventorymanager.Entity.Orgs;
-import com.leopardseal.inventorymanager.Entity.Invites;
+import com.leopardseal.inventorymanager.entity.Orgs;
+import com.leopardseal.inventorymanager.entity.Invites;
 
 import java.util.List;
 import java.util.Optional;

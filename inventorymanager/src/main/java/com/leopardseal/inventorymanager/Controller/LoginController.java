@@ -1,8 +1,7 @@
-package com.leopardseal.inventorymanager.Controller;
+package com.leopardseal.inventorymanager.controller;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.Optional;
 
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
@@ -16,9 +15,8 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.Collections;
 import java.util.Date;
-import java.util.Map;
 
-import com.leopardseal.inventorymanager.Repository.*;
+import com.leopardseal.inventorymanager.repository.*;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -29,8 +27,8 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
-import com.leopardseal.inventorymanager.Entity.MyUsers;
-import com.leopardseal.inventorymanager.Entity.DTO.LoginResponse;
+import com.leopardseal.inventorymanager.entity.MyUsers;
+import com.leopardseal.inventorymanager.entity.dto.LoginResponse;
 
 @RestController
 public class LoginController {
@@ -54,8 +52,6 @@ public class LoginController {
         // return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         try {
             authToken = authToken.replace("\"", "");
-            logger.info("here");
-            // logger.info(authToken);
             GoogleIdToken idToken = verifier.verify(authToken);
             if (idToken == null) {
                 return new ResponseEntity(HttpStatus.UNAUTHORIZED);
@@ -64,7 +60,7 @@ public class LoginController {
             // if(!myUsersRepository.existsByEmail(payload.getEmail())){
             // 	
             // }
-            logger.info(payload.getEmail());
+            logger.info(payload.getEmail() + "logged in");
             MyUsers user = myUsersRepository.findByEmail(payload.getEmail()).get();
             if(user == null){
                 return new ResponseEntity(HttpStatus.UNAUTHORIZED);
@@ -97,4 +93,5 @@ public class LoginController {
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()), SignatureAlgorithm.HS256)
                 .compact();
     }
+    
 }

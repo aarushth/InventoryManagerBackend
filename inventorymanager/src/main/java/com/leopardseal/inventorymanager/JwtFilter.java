@@ -57,13 +57,9 @@ public class JwtFilter extends OncePerRequestFilter {
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
-            String email = claims.get("email", String.class);
             Long userId = claims.get("user_id", Long.class);
-            // request.setAttribute("user_id", userId);
 
-            // Set user in SecurityContext
-            UsernamePasswordAuthenticationToken auth =
-                    new UsernamePasswordAuthenticationToken(userId, null, Collections.emptyList());
+            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userId, null, Collections.emptyList());
 
             SecurityContextHolder.getContext().setAuthentication(auth);
         } catch (JwtException e) {

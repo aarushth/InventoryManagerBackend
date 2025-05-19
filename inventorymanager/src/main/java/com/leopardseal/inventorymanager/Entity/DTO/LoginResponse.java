@@ -1,6 +1,6 @@
-package com.leopardseal.inventorymanager.Entity.DTO;
+package com.leopardseal.inventorymanager.entity.dto;
 
-import com.leopardseal.inventorymanager.Entity.MyUsers;
+import com.leopardseal.inventorymanager.entity.MyUsers;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

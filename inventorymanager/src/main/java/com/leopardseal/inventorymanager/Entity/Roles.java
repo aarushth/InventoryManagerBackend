@@ -1,6 +1,4 @@
-package com.leopardseal.inventorymanager.Entity;
-
-import java.io.Serializable;
+package com.leopardseal.inventorymanager.entity;
 
 import jakarta.persistence.Entity;
 

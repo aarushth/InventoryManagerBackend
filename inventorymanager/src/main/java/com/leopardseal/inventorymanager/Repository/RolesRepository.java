@@ -1,6 +1,6 @@
-package com.leopardseal.inventorymanager.Repository;
+package com.leopardseal.inventorymanager.repository;
 
-import com.leopardseal.inventorymanager.Entity.Roles;
+import com.leopardseal.inventorymanager.entity.Roles;
 
 import java.util.Optional;
 

@@ -1,7 +1,5 @@
-package com.leopardseal.inventorymanager.Controller;
+package com.leopardseal.inventorymanager.controller;
 
-
-import java.lang.StackWalker.Option;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -12,28 +10,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.format.annotation.DurationFormat.Unit;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.leopardseal.inventorymanager.Repository.*;
 
 import jakarta.annotation.PostConstruct;
 
 import com.azure.storage.blob.BlobContainerClient;
-import com.azure.storage.blob.BlobContainerClientBuilder;
 import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.azure.storage.blob.models.UserDelegationKey;
 import com.azure.storage.blob.sas.BlobSasPermission;
 import com.azure.storage.blob.sas.BlobServiceSasSignatureValues;
 import com.azure.storage.blob.specialized.BlockBlobClient;
-import com.azure.storage.common.StorageSharedKeyCredential;
-import com.leopardseal.inventorymanager.Entity.*;
-import com.leopardseal.inventorymanager.Entity.DTO.SaveResponse;
+
+
+import com.leopardseal.inventorymanager.repository.*;
+import com.leopardseal.inventorymanager.entity.Items;
+import com.leopardseal.inventorymanager.entity.dto.SaveResponse;
 
 @RestController
 public class ItemsController{
@@ -56,9 +52,6 @@ public class ItemsController{
     BlobContainerClient containerClient;
     @PostConstruct
     public void init() {
-        logger.debug("Azure Storage Connection String: {}", connectionString);
-        logger.debug("Azure Container Name: {}", containerName);
-
         BlobServiceClient blobServiceClient = new BlobServiceClientBuilder()
                 .connectionString(connectionString)
                 .buildClient();
