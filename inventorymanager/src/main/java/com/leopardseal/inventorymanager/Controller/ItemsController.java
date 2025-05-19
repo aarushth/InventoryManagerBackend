@@ -2,6 +2,8 @@ package com.leopardseal.inventorymanager.Controller;
 
 
 import java.lang.StackWalker.Option;
+import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,7 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.format.annotation.DurationFormat.Unit;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +21,19 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.leopardseal.inventorymanager.Repository.*;
 
+import jakarta.annotation.PostConstruct;
 
+import com.azure.storage.blob.BlobContainerClient;
+import com.azure.storage.blob.BlobContainerClientBuilder;
+import com.azure.storage.blob.BlobServiceClient;
+import com.azure.storage.blob.BlobServiceClientBuilder;
+import com.azure.storage.blob.models.UserDelegationKey;
+import com.azure.storage.blob.sas.BlobSasPermission;
+import com.azure.storage.blob.sas.BlobServiceSasSignatureValues;
+import com.azure.storage.blob.specialized.BlockBlobClient;
+import com.azure.storage.common.StorageSharedKeyCredential;
 import com.leopardseal.inventorymanager.Entity.*;
+import com.leopardseal.inventorymanager.Entity.DTO.SaveResponse;
 
 @RestController
 public class ItemsController{
@@ -32,7 +46,29 @@ public class ItemsController{
     @Autowired
     UserRolesRepository userRolesRepository;
 
+    
+    @Value("${spring.cloud.azure.storage.blob.connection-string}")
+    private String connectionString;
+    
+    @Value("${spring.cloud.azure.storage.blob.container-name}")
+    private String containerName;
 
+    BlobContainerClient containerClient;
+    @PostConstruct
+    public void init() {
+        logger.debug("Azure Storage Connection String: {}", connectionString);
+        logger.debug("Azure Container Name: {}", containerName);
+
+        BlobServiceClient blobServiceClient = new BlobServiceClientBuilder()
+                .connectionString(connectionString)
+                .buildClient();
+
+        containerClient = blobServiceClient.getBlobContainerClient(containerName);
+    }
+
+
+   
+    
 
     @GetMapping("/get_items/{org_id}")
     public ResponseEntity<Iterable<Items>> getItems(@PathVariable("org_id") Long orgId){
@@ -62,14 +98,30 @@ public class ItemsController{
         }
     }
 
-    @PostMapping("/update_item")
-    public ResponseEntity<String> updateItem(@RequestBody Items item) {
+    @PostMapping("/update_item/{img_changed}")
+    public ResponseEntity<SaveResponse> updateItem(@RequestBody Items item, @PathVariable("img_changed") Boolean imageChanged) {
         Long userId = getUserId();
         if(userRolesRepository.existsByUserIdAndOrgId(userId, item.getOrgId())){
             try {
+                String imgUrl = null;
                 Items updatedItem = itemsRepository.save(item);
+                if(imageChanged){
+                    
+                    BlockBlobClient blobClient = containerClient.getBlobClient(updatedItem.getId()+".jpg").getBlockBlobClient();
+                    
+                    BlobServiceSasSignatureValues sasValues = new BlobServiceSasSignatureValues(
+                        OffsetDateTime.now().plus(15, ChronoUnit.MINUTES),
+                        BlobSasPermission.parse("cw") // create + write
+                    ).setStartTime(OffsetDateTime.now());
+
+                    String sasToken = blobClient.generateSas(sasValues);
+                    updatedItem.setImageUrl(blobClient.getBlobUrl());
+                    imgUrl = updatedItem.getImageUrl() + "?" + sasToken;
+                    updatedItem = itemsRepository.save(updatedItem);
+                }
+                
                 if (updatedItem != null && updatedItem.getId() != null) {
-                    return new ResponseEntity<String>(HttpStatus.OK);
+                    return new ResponseEntity<SaveResponse>(new SaveResponse(updatedItem.getId(), imgUrl), HttpStatus.OK);
                 } else {
                     return new ResponseEntity(HttpStatus.BAD_REQUEST);
                 }
@@ -81,8 +133,15 @@ public class ItemsController{
         }
     }
 
+
     public Long getUserId(){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return (Long) auth.getPrincipal();
     }
+    public UserDelegationKey requestUserDelegationKey(BlobServiceClient blobServiceClient) {
+        UserDelegationKey userDelegationKey = blobServiceClient.getUserDelegationKey(
+           OffsetDateTime.now().minusMinutes(5),
+           OffsetDateTime.now().plusDays(1)
+       );
+       return userDelegationKey;}
 }

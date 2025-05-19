@@ -55,7 +55,7 @@ public class LoginController {
         try {
             authToken = authToken.replace("\"", "");
             logger.info("here");
-            logger.info(authToken);
+            // logger.info(authToken);
             GoogleIdToken idToken = verifier.verify(authToken);
             if (idToken == null) {
                 return new ResponseEntity(HttpStatus.UNAUTHORIZED);

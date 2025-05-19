@@ -123,6 +123,10 @@
 			<artifactId>google-oauth-client</artifactId>
 			<version>1.37.0</version>
 		</dependency>
+		<dependency>
+			<groupId>com.azure.spring</groupId>
+			<artifactId>spring-cloud-azure-starter-storage-blob</artifactId>
+		</dependency>
 	</dependencies>
 
 
