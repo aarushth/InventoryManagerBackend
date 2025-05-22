@@ -30,7 +30,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
 
     private static final List<String> EXCLUDED_PATHS = List.of(
-        "/login"    
+        "/login"
     );
 
     @Override

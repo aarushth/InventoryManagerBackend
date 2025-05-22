@@ -27,19 +27,23 @@ import com.azure.storage.blob.specialized.BlockBlobClient;
 
 
 import com.leopardseal.inventorymanager.repository.*;
-import com.leopardseal.inventorymanager.entity.Items;
+import com.leopardseal.inventorymanager.entity.Boxes;
+import com.leopardseal.inventorymanager.entity.dto.BoxesResponse;
 import com.leopardseal.inventorymanager.entity.dto.SaveResponse;
 
 @RestController
-public class ItemsController{
+public class BoxesController{
 
     private static Logger logger = LoggerFactory.getLogger(OrgsController.class);   
 
     @Autowired
-    private ItemsRepository itemsRepository;
+    private BoxesRepository boxesRepository;
 
     @Autowired
     UserRolesRepository userRolesRepository;
+
+    @Autowired
+    BoxSizesRepository boxSizesRepository;
 
     
     @Value("${spring.cloud.azure.storage.blob.connection-string}")
@@ -58,30 +62,26 @@ public class ItemsController{
         containerClient = blobServiceClient.getBlobContainerClient(containerName);
     }
 
-
-   
-    
-
-    @GetMapping("/get_items/{org_id}")
-    public ResponseEntity<Iterable<Items>> getItems(@PathVariable("org_id") Long orgId){
+    @GetMapping("/get_boxes/{org_id}")
+    public ResponseEntity<Iterable<BoxesResponse>> getBoxes(@PathVariable("org_id") Long orgId){
         Long userId = getUserId();
         
         if(userRolesRepository.existsByUserIdAndOrgId(userId, orgId)){
-            List<Items> items = itemsRepository.findAllItemsByOrgId(orgId);
-            return new ResponseEntity<Iterable<Items>>(items, HttpStatus.OK);
+            List<BoxesResponse> boxes = boxesRepository.findAllBoxesByOrgId(orgId);
+            return new ResponseEntity<Iterable<BoxesResponse>>(boxes, HttpStatus.OK);
         }
         return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         
     }
 
-    @GetMapping("/get_item/{item_id}")
-    public ResponseEntity<Items> getItemById(@PathVariable("item_id") Long itemId) {
+    @GetMapping("/get_box/{box_id}")
+    public ResponseEntity<BoxesResponse> getBoxById(@PathVariable("box_id") Long boxId) {
         Long userId = getUserId();
         
-        Optional<Items> item = itemsRepository.findItemById(itemId);
-        if (item.get() != null) {
-            if(userRolesRepository.existsByUserIdAndOrgId(userId, item.get().getOrgId())){
-                return ResponseEntity.ok(item.get());
+        Optional<BoxesResponse> box = boxesRepository.findBoxById(boxId);
+        if (box.get() != null) {
+            if(userRolesRepository.existsByUserIdAndOrgId(userId, box.get().getOrgId())){
+                return ResponseEntity.ok(box.get());
             }else{
                 return new ResponseEntity(HttpStatus.UNAUTHORIZED);
             }
@@ -90,30 +90,32 @@ public class ItemsController{
         }
     }
 
-    @PostMapping("/update_item/{img_changed}")
-    public ResponseEntity<SaveResponse> updateItem(@RequestBody Items item, @PathVariable("img_changed") Boolean imageChanged) {
+    @PostMapping("/update_box/{img_changed}")
+    public ResponseEntity<SaveResponse> updateBox(@RequestBody BoxesResponse box, @PathVariable("img_changed") Boolean imageChanged) {
         Long userId = getUserId();
-        if(userRolesRepository.existsByUserIdAndOrgId(userId, item.getOrgId())){
+        if(userRolesRepository.existsByUserIdAndOrgId(userId, box.getOrgId())){
             try {
                 String imgUrl = null;
-                Items updatedItem = itemsRepository.save(item);
+                Long sizeId = boxSizesRepository.findBySize(box.getSize()).get().getId();
+                Boxes updatedBox = new Boxes(box.getId(), box.getName(), box.getOrgId(), box.getBarcode(), box.getLocationId(), sizeId, box.getImageUrl());
+                boxesRepository.save(updatedBox);
                 if(imageChanged){
                     
-                    BlockBlobClient blobClient = containerClient.getBlobClient("item_" + updatedItem.getId()+".jpg").getBlockBlobClient();
+                    BlockBlobClient blobClient = containerClient.getBlobClient("box_" + updatedBox.getId()+".jpg").getBlockBlobClient();
                     
                     BlobServiceSasSignatureValues sasValues = new BlobServiceSasSignatureValues(
                         OffsetDateTime.now().plus(15, ChronoUnit.MINUTES),
-                        BlobSasPermission.parse("rcw") // create + write
-                    ).setStartTime(OffsetDateTime.now().minusMinutes(5));
+                        BlobSasPermission.parse("cw") // create + write
+                    ).setStartTime(OffsetDateTime.now());
 
                     String sasToken = blobClient.generateSas(sasValues);
-                    updatedItem.setImageUrl(blobClient.getBlobUrl());
-                    imgUrl = updatedItem.getImageUrl() + "?" + sasToken;
-                    updatedItem = itemsRepository.save(updatedItem);
+                    updatedBox.setImageUrl(blobClient.getBlobUrl());
+                    imgUrl = updatedBox.getImageUrl() + "?" + sasToken;
+                    updatedBox = boxesRepository.save(updatedBox);
                 }
                 
-                if (updatedItem != null && updatedItem.getId() != null) {
-                    return new ResponseEntity<SaveResponse>(new SaveResponse(updatedItem.getId(), imgUrl), HttpStatus.OK);
+                if (updatedBox != null && updatedBox.getId() != null) {
+                    return new ResponseEntity<SaveResponse>(new SaveResponse(updatedBox.getId(), imgUrl), HttpStatus.OK);
                 } else {
                     return new ResponseEntity(HttpStatus.BAD_REQUEST);
                 }
@@ -124,6 +126,7 @@ public class ItemsController{
             return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         }
     }
+
     public Long getUserId(){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return (Long) auth.getPrincipal();

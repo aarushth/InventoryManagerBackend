@@ -1,16 +1,15 @@
 package com.leopardseal.inventorymanager.repository;
 
-import com.leopardseal.inventorymanager.entity.Roles;
-
 import java.util.Optional;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import com.leopardseal.inventorymanager.entity.BoxSizes;
 
 @Repository
-public interface RolesRepository extends CrudRepository<Roles, Long> {
+public interface BoxSizesRepository extends CrudRepository<BoxSizes, Long> {
     
-    Optional<Roles> findByRole(String role);
+    Optional<BoxSizes> findBySize(String size);
     
 }

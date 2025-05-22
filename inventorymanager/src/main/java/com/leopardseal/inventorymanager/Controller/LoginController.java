@@ -22,17 +22,25 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 
+
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
-import com.leopardseal.inventorymanager.entity.MyUsers;
 import com.leopardseal.inventorymanager.entity.dto.LoginResponse;
+import com.leopardseal.inventorymanager.entity.MyUsers;
 
 @RestController
 public class LoginController {
+    
+    // @Getter
+    // @AllArgsConstructor
+    // private static class LoginInput{
+        
+    //     private String authToken;
 
+    // }
     @Value("${app.jwt.secret}")
     private String SECRET_KEY;
     private static final long EXPIRATION_MS = 1800000;
@@ -52,6 +60,7 @@ public class LoginController {
         // return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         try {
             authToken = authToken.replace("\"", "");
+            logger.debug(authToken);
             GoogleIdToken idToken = verifier.verify(authToken);
             if (idToken == null) {
                 return new ResponseEntity(HttpStatus.UNAUTHORIZED);
@@ -60,7 +69,7 @@ public class LoginController {
             // if(!myUsersRepository.existsByEmail(payload.getEmail())){
             // 	
             // }
-            logger.info(payload.getEmail() + "logged in");
+            logger.info(payload.getEmail() + " logged in");
             MyUsers user = myUsersRepository.findByEmail(payload.getEmail()).get();
             if(user == null){
                 return new ResponseEntity(HttpStatus.UNAUTHORIZED);

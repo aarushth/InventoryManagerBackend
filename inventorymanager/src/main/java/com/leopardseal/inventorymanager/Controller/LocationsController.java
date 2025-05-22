@@ -27,16 +27,16 @@ import com.azure.storage.blob.specialized.BlockBlobClient;
 
 
 import com.leopardseal.inventorymanager.repository.*;
-import com.leopardseal.inventorymanager.entity.Items;
+import com.leopardseal.inventorymanager.entity.Locations;
 import com.leopardseal.inventorymanager.entity.dto.SaveResponse;
 
 @RestController
-public class ItemsController{
+public class LocationsController{
 
     private static Logger logger = LoggerFactory.getLogger(OrgsController.class);   
 
     @Autowired
-    private ItemsRepository itemsRepository;
+    private LocationsRepository locationsRepository;
 
     @Autowired
     UserRolesRepository userRolesRepository;
@@ -62,26 +62,26 @@ public class ItemsController{
    
     
 
-    @GetMapping("/get_items/{org_id}")
-    public ResponseEntity<Iterable<Items>> getItems(@PathVariable("org_id") Long orgId){
+    @GetMapping("/get_locations/{org_id}")
+    public ResponseEntity<Iterable<Locations>> getLocations(@PathVariable("org_id") Long orgId){
         Long userId = getUserId();
         
         if(userRolesRepository.existsByUserIdAndOrgId(userId, orgId)){
-            List<Items> items = itemsRepository.findAllItemsByOrgId(orgId);
-            return new ResponseEntity<Iterable<Items>>(items, HttpStatus.OK);
+            List<Locations> locations = locationsRepository.findAllLocationsByOrgId(orgId);
+            return new ResponseEntity<Iterable<Locations>>(locations, HttpStatus.OK);
         }
         return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         
     }
 
-    @GetMapping("/get_item/{item_id}")
-    public ResponseEntity<Items> getItemById(@PathVariable("item_id") Long itemId) {
+    @GetMapping("/get_location/{location_id}")
+    public ResponseEntity<Locations> getLocationById(@PathVariable("location_id") Long locationId) {
         Long userId = getUserId();
         
-        Optional<Items> item = itemsRepository.findItemById(itemId);
-        if (item.get() != null) {
-            if(userRolesRepository.existsByUserIdAndOrgId(userId, item.get().getOrgId())){
-                return ResponseEntity.ok(item.get());
+        Optional<Locations> location = locationsRepository.findLocationById(locationId);
+        if (location.get() != null) {
+            if(userRolesRepository.existsByUserIdAndOrgId(userId, location.get().getOrgId())){
+                return ResponseEntity.ok(location.get());
             }else{
                 return new ResponseEntity(HttpStatus.UNAUTHORIZED);
             }
@@ -90,16 +90,16 @@ public class ItemsController{
         }
     }
 
-    @PostMapping("/update_item/{img_changed}")
-    public ResponseEntity<SaveResponse> updateItem(@RequestBody Items item, @PathVariable("img_changed") Boolean imageChanged) {
+    @PostMapping("/update_location/{img_changed}")
+    public ResponseEntity<SaveResponse> updateLocation(@RequestBody Locations location, @PathVariable("img_changed") Boolean imageChanged) {
         Long userId = getUserId();
-        if(userRolesRepository.existsByUserIdAndOrgId(userId, item.getOrgId())){
+        if(userRolesRepository.existsByUserIdAndOrgId(userId, location.getOrgId())){
             try {
                 String imgUrl = null;
-                Items updatedItem = itemsRepository.save(item);
+                Locations updatedLocation = locationsRepository.save(location);
                 if(imageChanged){
                     
-                    BlockBlobClient blobClient = containerClient.getBlobClient("item_" + updatedItem.getId()+".jpg").getBlockBlobClient();
+                    BlockBlobClient blobClient = containerClient.getBlobClient("location_" + updatedLocation.getId()+".jpg").getBlockBlobClient();
                     
                     BlobServiceSasSignatureValues sasValues = new BlobServiceSasSignatureValues(
                         OffsetDateTime.now().plus(15, ChronoUnit.MINUTES),
@@ -107,13 +107,13 @@ public class ItemsController{
                     ).setStartTime(OffsetDateTime.now().minusMinutes(5));
 
                     String sasToken = blobClient.generateSas(sasValues);
-                    updatedItem.setImageUrl(blobClient.getBlobUrl());
-                    imgUrl = updatedItem.getImageUrl() + "?" + sasToken;
-                    updatedItem = itemsRepository.save(updatedItem);
+                    updatedLocation.setImageUrl(blobClient.getBlobUrl());
+                    imgUrl = updatedLocation.getImageUrl() + "?" + sasToken;
+                    updatedLocation = locationsRepository.save(updatedLocation);
                 }
                 
-                if (updatedItem != null && updatedItem.getId() != null) {
-                    return new ResponseEntity<SaveResponse>(new SaveResponse(updatedItem.getId(), imgUrl), HttpStatus.OK);
+                if (updatedLocation != null && updatedLocation.getId() != null) {
+                    return new ResponseEntity<SaveResponse>(new SaveResponse(updatedLocation.getId(), imgUrl), HttpStatus.OK);
                 } else {
                     return new ResponseEntity(HttpStatus.BAD_REQUEST);
                 }
@@ -124,6 +124,8 @@ public class ItemsController{
             return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         }
     }
+
+
     public Long getUserId(){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return (Long) auth.getPrincipal();

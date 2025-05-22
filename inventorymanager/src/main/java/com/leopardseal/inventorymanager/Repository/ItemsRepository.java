@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 public interface ItemsRepository extends CrudRepository<Items, Long> {
     List<Items> findAllItemsByOrgId(Long orgId);
 
-    Optional<Items> findItemById(Long Id);
+    Optional<Items> findItemById(Long id);
 
     
 }
