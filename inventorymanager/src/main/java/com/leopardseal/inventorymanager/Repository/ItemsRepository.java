@@ -15,5 +15,6 @@ public interface ItemsRepository extends CrudRepository<Items, Long> {
 
     Optional<Items> findItemById(Long id);
 
+    List<Items> findAllItemsByOrgIdAndBoxId(Long orgId, Long boxId);
     
 }

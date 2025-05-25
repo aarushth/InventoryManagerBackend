@@ -16,7 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.leopardseal.inventorymanager.repository.*;
-
+import com.leopardseal.inventorymanager.service.AuthService;
 import com.leopardseal.inventorymanager.entity.UserRoles;
 import com.leopardseal.inventorymanager.entity.Orgs;
 import com.leopardseal.inventorymanager.entity.Roles;
@@ -31,6 +31,9 @@ public class OrgsController{
     private UserRolesRepository userRolesRepository;
 
     @Autowired
+    private AuthService authService;
+
+    @Autowired
     private InvitesRepository invitesRepository;
 
     @Autowired
@@ -39,7 +42,7 @@ public class OrgsController{
 
     @GetMapping("/get_orgs")
     public ResponseEntity<Iterable<Orgs>> getOrgs(){
-        Long userId = getUserId();
+        Long userId = authService.getUserId();
         List<Orgs> orgs = userRolesRepository.findAllOrgsByUserId(userId);
 
         return new ResponseEntity<Iterable<Orgs>>(orgs, HttpStatus.OK);
@@ -56,7 +59,7 @@ public class OrgsController{
     @PostMapping("/accept_invite")
     public ResponseEntity acceptInvite(@RequestParam("orgId") Long orgId, @RequestParam("role") String role){
         
-        Long userId = getUserId();
+        Long userId = authService.getUserId();
 
         Optional<Roles> r = rolesRepository.findByRole(role);
         Optional<Invites> inv = invitesRepository.findInviteByUserIdRoleIdOrgId(userId, orgId, r.get().getId());
@@ -69,9 +72,4 @@ public class OrgsController{
             return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         }
     }
-    public Long getUserId(){
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return (Long) auth.getPrincipal();
-    }
-
 }

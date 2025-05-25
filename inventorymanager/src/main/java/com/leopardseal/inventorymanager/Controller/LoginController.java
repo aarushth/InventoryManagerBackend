@@ -34,13 +34,6 @@ import com.leopardseal.inventorymanager.entity.MyUsers;
 @RestController
 public class LoginController {
     
-    // @Getter
-    // @AllArgsConstructor
-    // private static class LoginInput{
-        
-    //     private String authToken;
-
-    // }
     @Value("${app.jwt.secret}")
     private String SECRET_KEY;
     private static final long EXPIRATION_MS = 1800000;
