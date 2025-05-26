@@ -40,7 +40,12 @@ public class ItemsController{
                 String imgUrl = null;
                 Items updatedItem = itemsRepository.save(item);
                 if(imageChanged){
-                    imgUrl = azureBlobService.uploadImageWithSas(updatedItem.getId(), "item");
+                    if(updatedItem.getImageUrl() == null){
+                        imgUrl = azureBlobService.uploadImageWithSas(updatedItem.getId(), "item", 1L);
+                    }else{
+                        Long vers = azureBlobService.extractVersion(updatedItem.getImageUrl()) + 1L;
+                        imgUrl = azureBlobService.uploadImageWithSas(updatedItem.getId(), "item", vers);
+                    }
                     updatedItem.setImageUrl(imgUrl.split("\\?")[0]);
                     updatedItem = itemsRepository.save(updatedItem);
                 }

@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class AzureBlobService {
@@ -33,9 +35,9 @@ public class AzureBlobService {
         containerClient = blobServiceClient.getBlobContainerClient(containerName);
     }
 
-    public String uploadImageWithSas(Long id, String type) {
+    public String uploadImageWithSas(Long id, String type, Long vers) {
         BlockBlobClient blobClient = containerClient
-                .getBlobClient(type + "_" + id + ".jpg")
+                .getBlobClient(type + "_" + id + "_" + vers + ".jpg")
                 .getBlockBlobClient();
 
         BlobServiceSasSignatureValues sasValues = new BlobServiceSasSignatureValues(
@@ -45,5 +47,14 @@ public class AzureBlobService {
 
         String sasToken = blobClient.generateSas(sasValues);
         return blobClient.getBlobUrl() + "?" + sasToken;
+    }
+
+    public Long extractVersion(String input) {
+        Pattern pattern = Pattern.compile("_(\\d+)\\.jpg$");
+        Matcher matcher = pattern.matcher(input);
+        if (matcher.find()) {
+            return Long.parseLong(matcher.group(1));
+        }
+        return null;
     }
 }

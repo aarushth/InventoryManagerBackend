@@ -66,7 +66,12 @@ public class LocationsController{
                 String imgUrl = null;
                 Locations updatedLocation = locationsRepository.save(location);
                 if(imageChanged){
-                    imgUrl = azureBlobService.uploadImageWithSas(updatedLocation.getId(), "location");
+                    if(updatedLocation.getImageUrl() == null){
+                        imgUrl = azureBlobService.uploadImageWithSas(updatedLocation.getId(), "location", 1L);
+                    }else{
+                        Long vers = azureBlobService.extractVersion(updatedLocation.getImageUrl()) + 1L;
+                        imgUrl = azureBlobService.uploadImageWithSas(updatedLocation.getId(), "location", vers);
+                    }
                     updatedLocation.setImageUrl(imgUrl.split("\\?")[0]);
                     updatedLocation = locationsRepository.save(updatedLocation);
                 }

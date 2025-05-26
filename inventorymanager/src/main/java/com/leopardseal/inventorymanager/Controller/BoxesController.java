@@ -78,8 +78,12 @@ public class BoxesController{
                 Boxes updatedBox = new Boxes(box.getId(), box.getName(), box.getOrgId(), box.getBarcode(), box.getLocationId(), sizeId, box.getImageUrl());
                 boxesRepository.save(updatedBox);
                 if(imageChanged){
-                    
-                    imgUrl = azureBlobService.uploadImageWithSas(updatedBox.getId(), "box");
+                    if(updatedBox.getImageUrl() == null){
+                        imgUrl = azureBlobService.uploadImageWithSas(updatedBox.getId(), "box", 1L);
+                    }else{
+                        Long vers = azureBlobService.extractVersion(updatedBox.getImageUrl()) + 1L;
+                        imgUrl = azureBlobService.uploadImageWithSas(updatedBox.getId(), "box", vers);
+                    }
                     updatedBox.setImageUrl(imgUrl.split("\\?")[0]);
                     updatedBox = boxesRepository.save(updatedBox);
                 }
