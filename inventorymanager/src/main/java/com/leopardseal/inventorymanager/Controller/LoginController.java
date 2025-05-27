@@ -50,7 +50,6 @@ public class LoginController {
 	
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody String authToken){
-        // return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         try {
             authToken = authToken.replace("\"", "");
             logger.debug(authToken);
@@ -59,30 +58,29 @@ public class LoginController {
                 return new ResponseEntity(HttpStatus.UNAUTHORIZED);
             }
             Payload payload = idToken.getPayload();
-            // if(!myUsersRepository.existsByEmail(payload.getEmail())){
-            // 	
-            // }
             logger.info(payload.getEmail() + " logged in");
             MyUsers user = myUsersRepository.findByEmail(payload.getEmail()).get();
             if(user == null){
                 return new ResponseEntity(HttpStatus.UNAUTHORIZED);
             }
-            // System.out.println(user.getEmail());
             if(user.getImgUrl() == null){
                 user.setImgUrl((String) payload.get("picture"));
                 myUsersRepository.save(user);
             }
             String jwt = generateJwtToken(user.getEmail(), user.getId());
             return new ResponseEntity<LoginResponse>(new LoginResponse(jwt, user), HttpStatus.OK);
-            // request.setAttribute("userId", user.getId());
+
         } catch (GeneralSecurityException | IOException e) {
             return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         }catch(Exception e){
             return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         }
-        
-        // return new ResponseEntity<MyUsers>(user.get(), HttpStatus.OK);
-        
+    }
+
+    @GetMapping("/version")
+    public ResponseEntity<String> version(){
+        String version = "1.0"
+        return new ResponseEntity(version, HttpStatus.OK);
     }
 
     private String generateJwtToken(String email, Long id) {
