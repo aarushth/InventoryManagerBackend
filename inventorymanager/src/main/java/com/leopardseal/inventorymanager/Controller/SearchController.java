@@ -22,10 +22,26 @@ public class SearchController{
             
             List<Items> items = itemsRepository.findAllItemsByQuery(orgId, query);
             List<BoxesResponse> boxes = boxesRepository.findAllItemsByQuery(orgId, query);
-            List<Locations> locations = locationsRepository.findAllItemsByQuery(orgId, query);
+            List<Locations> locations = locationsRepository.findAllLocationsByQuery(orgId, query);
 
             SearchResponse response = new SearchResponse(items.size(), boxes.size(), locations.size(), items, boxes, locations);
 
+            return new ResponseEntity<SearchResponse>(response, HttpStatus.OK);
+        }else{
+            return ResponseEntity(HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    @GetMapping("/search_barcode/{org_id}/{barcode}")
+    public ResponseEntity<SearchResponse> searchBarcode(@PathVariable("org_id") Long orgId, @PathVariable("barcode") String barcode){
+        if(authService.checkAuth(orgId)){
+            
+            List<Items> items = itemsRepository.findAllItemsByBarcode(orgId, barcode);
+            List<BoxesResponse> boxes = boxesRepository.findAllItemsByBarcode(orgId, barcode);
+            List<Locations> locations = locationsRepository.findAllLocationsByBarcode(orgId, barcode);
+
+            SearchResponse response = new SearchResponse(items.size(), boxes.size(), locations.size(), items, boxes, locations);
+        
             return new ResponseEntity<SearchResponse>(response, HttpStatus.OK);
         }else{
             return ResponseEntity(HttpStatus.UNAUTHORIZED);

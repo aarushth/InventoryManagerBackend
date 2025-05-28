@@ -16,5 +16,8 @@ public interface LocationsRepository extends CrudRepository<Locations, Long> {
     Optional<Locations> findLocationById(Long id);
 
     @Query("SELECT l.id, l.org_id, l.barcode, l.description, l.image_url FROM locations l WHERE l.org_id = :orgId AND ((l.name LIKE %:query%) OR (l.barcode LIKE %:query%) OR (l.description LIKE %:query%))")
-    List<Items> findAllItemsByQuery(Long orgId, String query);
+    List<Locations> findAllLocationsByQuery(Long orgId, String query);
+
+    @Query("SELECT l.id, l.org_id, l.barcode, l.description, l.image_url FROM locations l WHERE l.org_id = :orgId AND l.barcode = :barcode")
+    List<Locations> findAllLocationsByBarcode(Long orgId, String barcode);
 }

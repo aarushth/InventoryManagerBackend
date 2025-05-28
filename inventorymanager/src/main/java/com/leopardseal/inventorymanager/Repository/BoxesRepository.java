@@ -26,4 +26,7 @@ public interface BoxesRepository extends CrudRepository<Boxes, Long> {
     @Query("SELECT b.id, b.name, b.org_id, b.barcode, b.location_id, s.size, b.image_url FROM boxes b JOIN box_sizes s ON b.size_id = s.id WHERE b.org_id = :orgId AND ((b.name LIKE %:query%) OR (b.barcode LIKE %:query%))")
     List<BoxesResponse> findAllBoxesByQuery(Long orgId, String query);
 
+    @Query("SELECT b.id, b.name, b.org_id, b.barcode, b.location_id, s.size, b.image_url FROM boxes b JOIN box_sizes s ON b.size_id = s.id WHERE b.org_id = :orgId AND b.barcode = :barcode")
+    List<BoxesResponse> findAllBoxesByBarcode(Long orgId, String barcode);
+
 }
