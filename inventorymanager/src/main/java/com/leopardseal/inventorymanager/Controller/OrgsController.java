@@ -63,7 +63,7 @@ public class OrgsController{
             UserRoles userRoles = new UserRoles(userId, orgId, r.get().getId());
             userRolesRepository.save(userRoles);
             invitesRepository.delete(inv.get());
-            return new ResponseEntity<String>(HttpStatus.OK);
+            return new ResponseEntity(HttpStatus.OK);
         }else{
             return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         }
