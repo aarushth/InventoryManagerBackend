@@ -5,6 +5,7 @@ import com.leopardseal.inventorymanager.entity.Locations;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -16,5 +17,5 @@ public interface LocationsRepository extends CrudRepository<Locations, Long> {
     Optional<Locations> findLocationById(Long id);
 
     @Query("SELECT l.id, l.org_id, l.barcode, l.description, l.image_url FROM locations l WHERE l.org_id = :orgId AND ((l.name LIKE %:query%) OR (l.barcode LIKE %:query%) OR (l.description LIKE %:query%))")
-    List<Items> findAllItemsByQuery(Long orgId, String query);
+    List<Locations> findAllLocationsByQuery(Long orgId, String query);
 }

@@ -1,5 +1,10 @@
 package com.leopardseal.inventorymanager.entity.dto;
 
+import java.util.List;
+
+import com.leopardseal.inventorymanager.entity.Items;
+import com.leopardseal.inventorymanager.entity.Locations;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
