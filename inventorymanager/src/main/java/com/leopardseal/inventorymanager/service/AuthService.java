@@ -16,6 +16,9 @@ public class AuthService {
     public Boolean checkAuth(Long orgId){
         return userRolesRepository.existsByUserIdAndOrgId(getUserId(), orgId);
     }
+    public Boolean checkAdminAuth(Long orgId){
+        return userRolesRepository.existsByUserIdAndOrgIdAndRoleId(getUserId(), orgId, 1);
+    }
     public Long getUserId(){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return (Long) auth.getPrincipal();

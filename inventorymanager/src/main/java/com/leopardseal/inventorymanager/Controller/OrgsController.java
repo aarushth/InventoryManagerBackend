@@ -10,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.leopardseal.inventorymanager.repository.*;
 import com.leopardseal.inventorymanager.service.AuthService;
@@ -46,8 +44,7 @@ public class OrgsController{
 
     @GetMapping("/get_invites")
     public ResponseEntity<Iterable<Orgs>> getInvites(){
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = (Long) auth.getPrincipal();
+        Long userId = authService.getUserId()
         List<Orgs> invites = invitesRepository.findAllInvitesByUserId(userId);
         return new ResponseEntity<Iterable<Orgs>>(invites, HttpStatus.OK);
     }
@@ -68,4 +65,42 @@ public class OrgsController{
             return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         }
     }
+
+    @GetMapping("/user_list/{org_id}")
+    public ResponseEntity<List<UserResponse>> userList(@PathVariable("orgId") Long orgId){
+        if(authService.checkAdminAuth(orgId)){
+            List<UserResponse> response = userRolesRepository.getAllUsersByOrg(orgId);
+            return new ResponseEntity<List<UserResponse>>(response, HttpStatus.OK);
+        }else{
+            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    @PostMapping("/invite_user/{org_id}")
+    public ResponseEntity inviteUser(@RequestBody UserResponse userResponse, @PathVariable("org_id") Long orgId){
+        if(authService.checkAdminAuth(orgId)){
+            Optional<Roles> role = rolesRepository.findByRole(userResponse.getRole());
+            MyUsers user = myUsersRepository.findByEmail(userResponse.getEmail()).get();
+            if(user == null){
+                user = new MyUsers(userResponse.getEmail());
+                user = myUsersRepository.save(user);
+            }
+            Invites invite = new Invites(user.getId(), orgId, role.get().getId());
+            invitesRepository.save(invite);
+            return new ResponseEntity(HttpStatus.OK);
+        }else{
+            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    @PostMapping("/remove_user/{org_id}")
+    public ResponseEntity removeUser(@RequestBody UserResponse userResponse, @PathVariable("org_id") Long orgId){
+        if(authService.checkAdminAuth(orgId)){
+            userRolesRepository.deleteByUserIdAndOrgId(userResponse.getId(), orgId);
+            return new ResponseEntity(HttpStatus.OK);
+        }else{
+            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+        }
+    }
+
 }

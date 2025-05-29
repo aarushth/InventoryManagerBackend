@@ -1,34 +1,29 @@
-package com.leopardseal.inventorymanager.entity;
-
+package com.leopardseal.inventorymanager.entity.dto;
 
 import org.springframework.data.annotation.Id;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class MyUsers {
+public class UserResponse{
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    
     private String email;
 
-    private String imgUrl;
+    private String imageUrl;
 
-    public MyUsers(String email){
-        this.email = email;
-    }
-
+    private String role;
 }

@@ -18,4 +18,7 @@ public interface UserRolesRepository extends CrudRepository<UserRoles, Long> {
 
     Boolean existsByUserIdAndOrgId(Long userId, Long orgId);
 
+    Boolean existsByUserIdAndOrgId(Long userId, Long orgId, Long roleId);
+
+    Long deleteByUserIdAndOrgId(Long userId, Long orgId);
 }
