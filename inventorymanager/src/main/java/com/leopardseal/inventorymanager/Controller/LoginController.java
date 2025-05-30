@@ -79,7 +79,7 @@ public class LoginController {
 
     @GetMapping("/version")
     public ResponseEntity<String> version(){
-        String version = "1.1";
+        String version = "1.3";
         return new ResponseEntity(version, HttpStatus.OK);
     }
 
