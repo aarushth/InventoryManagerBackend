@@ -5,9 +5,11 @@ import com.leopardseal.inventorymanager.entity.UserRoles;
 
 import java.util.List;
 
+import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Repository
@@ -18,7 +20,10 @@ public interface UserRolesRepository extends CrudRepository<UserRoles, Long> {
 
     Boolean existsByUserIdAndOrgId(Long userId, Long orgId);
 
-    Boolean existsByUserIdAndOrgId(Long userId, Long orgId, Long roleId);
+    Boolean existsByUserIdAndOrgIdAndRoleId(Long userId, Long orgId, Long roleId);
 
-    Long deleteByUserIdAndOrgId(Long userId, Long orgId);
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM user_roles WHERE user_id = :userId AND org_id = :orgId")
+    int deleteByUserIdAndOrgId(Long userId, Long orgId);
 }
