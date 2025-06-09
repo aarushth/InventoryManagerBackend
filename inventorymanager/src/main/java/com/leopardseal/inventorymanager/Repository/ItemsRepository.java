@@ -12,6 +12,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ItemsRepository extends CrudRepository<Items, Long> {
+    
+    @EntityGraph(attributePaths = "tags")
     List<Items> findAllItemsByOrgId(Long orgId);
 
     Optional<Items> findItemById(Long id);

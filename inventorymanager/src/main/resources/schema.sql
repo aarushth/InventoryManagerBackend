@@ -78,7 +78,17 @@ CREATE TABLE items(
     CONSTRAINT FK_orgs_items FOREIGN KEY(org_id) REFERENCES orgs(id),
     CONSTRAINT FK_boxes_items FOREIGN KEY(box_id) REFERENCES boxes(id)
 );
-
+CREATE TABLE tags(
+    id INT IDENTITY PRIMARY KEY,
+    tag VARCHAR (32)
+);
+CREATE TABLE item_tags(
+    id INT IDENTITY PRIMARY KEY,
+    item_id INT NOT NULL,
+    tag_id INT NOT NULL,
+    CONSTRAINT FK_item FOREIGN KEY(item_id) REFERENCES items(id),
+    CONSTRAINT FK_tag FOREIGN KEY(tag_id) REFERENCES tags(id)
+);
 
 -- INSERT INTO roles (role) VALUES('admin');
 -- INSERT INTO roles (role) VALUES('stocker');

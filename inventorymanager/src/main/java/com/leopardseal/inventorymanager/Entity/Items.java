@@ -17,6 +17,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
+@Table(name = "items")
 public class Items{
 
     @Id
@@ -39,4 +40,11 @@ public class Items{
 
     private String imageUrl;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "item_tags",
+        joinColumns = @JoinColumn(name = "item_id"),
+        inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private List<Tag> tags;
 }
