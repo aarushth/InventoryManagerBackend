@@ -1,8 +1,9 @@
 package com.leopardseal.inventorymanager.entity;
 
-
-import org.springframework.data.annotation.Id;
-
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,21 +12,29 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
+
 @Entity
-@Table(name = "tags")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class Tag {
+@Table(name = "invites")
+public class Invite{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private MyUser myUser;
 
-    private String tag;
+    @ManyToOne
+    @JoinColumn(name = "org_id")
+    private Org org;
 
-    @ManyToMany(mappedBy = "tags")
-    private List<Item> items;
-
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Role role;
 }

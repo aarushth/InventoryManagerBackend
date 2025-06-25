@@ -1,6 +1,6 @@
 package com.leopardseal.inventorymanager.entity.dto;
 
-import com.leopardseal.inventorymanager.entity.MyUsers;
+import com.leopardseal.inventorymanager.entity.MyUser;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,5 +10,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class LoginResponse {
     private String token;
-    private MyUsers user;
+    private MyUser user;
 }

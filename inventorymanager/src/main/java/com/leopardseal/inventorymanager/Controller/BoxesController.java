@@ -11,8 +11,7 @@ import org.springframework.http.ResponseEntity;
 import com.leopardseal.inventorymanager.repository.*;
 import com.leopardseal.inventorymanager.service.AuthService;
 import com.leopardseal.inventorymanager.service.AzureBlobService;
-import com.leopardseal.inventorymanager.entity.Boxes;
-import com.leopardseal.inventorymanager.entity.dto.BoxesResponse;
+import com.leopardseal.inventorymanager.entity.Box;
 import com.leopardseal.inventorymanager.entity.dto.SaveResponse;
 
 @RestController
@@ -32,18 +31,18 @@ public class BoxesController{
     BoxSizesRepository boxSizesRepository;
 
     @GetMapping("/get_boxes/{org_id}")
-    public ResponseEntity<Iterable<BoxesResponse>> getBoxes(@PathVariable("org_id") Long orgId){
+    public ResponseEntity<Iterable<Box>> getBoxes(@PathVariable("org_id") Long orgId){
         if(authService.checkAuth(orgId)){
-            List<BoxesResponse> boxes = boxesRepository.findAllBoxesByOrgId(orgId);
-            return new ResponseEntity<Iterable<BoxesResponse>>(boxes, HttpStatus.OK);
+            List<Box> boxes = boxesRepository.findAllByOrgId(orgId);
+            return new ResponseEntity<Iterable<Box>>(boxes, HttpStatus.OK);
         }
         return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         
     }
 
     @GetMapping("/get_box/{box_id}")
-    public ResponseEntity<BoxesResponse> getBoxById(@PathVariable("box_id") Long boxId) {
-        Optional<BoxesResponse> box = boxesRepository.findBoxById(boxId);
+    public ResponseEntity<Box> getBoxById(@PathVariable("box_id") Long boxId) {
+        Optional<Box> box = boxesRepository.findById(boxId);
         if (box.get() != null) {
             if(authService.checkAuth(box.get().getOrgId())){
                 return ResponseEntity.ok(box.get());
@@ -56,36 +55,34 @@ public class BoxesController{
     }
 
     @GetMapping("/get_boxes_by_location_id/{org_id}/{location_id}")
-    public ResponseEntity<Iterable<BoxesResponse>> getBoxesByLocationId(@PathVariable("org_id") Long orgId, @PathVariable("location_id") Long locationId){
+    public ResponseEntity<Iterable<Box>> getBoxesByLocationId(@PathVariable("org_id") Long orgId, @PathVariable("location_id") Long locationId){
         if(authService.checkAuth(orgId)){
-            List<BoxesResponse> boxes = boxesRepository.findAllBoxesByOrgIdAndLocationId(orgId, locationId);
-            return new ResponseEntity<Iterable<BoxesResponse>>(boxes, HttpStatus.OK);
+            List<Box> boxes = boxesRepository.findAllByOrgIdAndLocationId(orgId, locationId);
+            return new ResponseEntity<Iterable<Box>>(boxes, HttpStatus.OK);
         }
         return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         
     }
 
     @PostMapping("/update_box/{img_changed}")
-    public ResponseEntity<SaveResponse> updateBox(@RequestBody BoxesResponse box, @PathVariable("img_changed") Boolean imageChanged) {
+    public ResponseEntity<SaveResponse> updateBox(@RequestBody Box box, @PathVariable("img_changed") Boolean imageChanged) {
         if(authService.checkAuth(box.getOrgId())){
             try {
                 String imgUrl = null;
-                Long sizeId = boxSizesRepository.findBySize(box.getSize()).get().getId();
-                Boxes updatedBox = new Boxes(box.getId(), box.getName(), box.getOrgId(), box.getBarcode(), box.getLocationId(), sizeId, box.getImageUrl());
-                boxesRepository.save(updatedBox);
+                boxesRepository.save(box);
                 if(imageChanged){
-                    if(updatedBox.getImageUrl() == null){
-                        imgUrl = azureBlobService.uploadImageWithSas(updatedBox.getId(), "box", 1L);
+                    if(box.getImageUrl() == null){
+                        imgUrl = azureBlobService.uploadImageWithSas(box.getId(), "box", 1L);
                     }else{
-                        Long vers = azureBlobService.extractVersion(updatedBox.getImageUrl()) + 1L;
-                        imgUrl = azureBlobService.uploadImageWithSas(updatedBox.getId(), "box", vers);
+                        Long vers = azureBlobService.extractVersion(box.getImageUrl()) + 1L;
+                        imgUrl = azureBlobService.uploadImageWithSas(box.getId(), "box", vers);
                     }
-                    updatedBox.setImageUrl(imgUrl.split("\\?")[0]);
-                    updatedBox = boxesRepository.save(updatedBox);
+                    box.setImageUrl(imgUrl.split("\\?")[0]);
+                    box = boxesRepository.save(box);
                 }
                 
-                if (updatedBox != null && updatedBox.getId() != null) {
-                    return new ResponseEntity<SaveResponse>(new SaveResponse(updatedBox.getId(), imgUrl), HttpStatus.OK);
+                if (box != null && box.getId() != null) {
+                    return new ResponseEntity<SaveResponse>(new SaveResponse(box.getId(), imgUrl), HttpStatus.OK);
                 } else {
                     return new ResponseEntity(HttpStatus.BAD_REQUEST);
                 }

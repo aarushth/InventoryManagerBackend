@@ -2,8 +2,9 @@ package com.leopardseal.inventorymanager.entity.dto;
 
 import java.util.List;
 
-import com.leopardseal.inventorymanager.entity.Items;
-import com.leopardseal.inventorymanager.entity.Locations;
+import com.leopardseal.inventorymanager.entity.Item;  
+import com.leopardseal.inventorymanager.entity.Box;
+import com.leopardseal.inventorymanager.entity.Location;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,7 +18,7 @@ public class SearchResponse {
     private int boxCount;
     private int locationCount;
 
-    private List<Items> items;
-    private List<BoxesResponse> boxes;
-    private List<Locations> locations;
+    private List<Item> items;
+    private List<Box> boxes;
+    private List<Location> locations;
 }

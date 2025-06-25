@@ -1,38 +1,31 @@
 package com.leopardseal.inventorymanager.entity;
 
-import org.springframework.data.annotation.Id;
 
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class Invites{
+@Table(name = "my_users")
+public class MyUser {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    private Long userId;
 
-    private Long orgId;
+    private String email;
 
-    private Long roleId;
-
-    public Invites(Long userId, Long orgId, Long roleId){
-        this.userId = userId;
-        this.orgId = orgId;
-        this.roleId = roleId;
-    }
+    private String imgUrl;
 
 }

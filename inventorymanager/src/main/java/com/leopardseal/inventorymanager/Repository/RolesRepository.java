@@ -1,6 +1,6 @@
 package com.leopardseal.inventorymanager.repository;
 
-import com.leopardseal.inventorymanager.entity.Roles;
+import com.leopardseal.inventorymanager.entity.Role;
 
 import java.util.Optional;
 
@@ -9,8 +9,8 @@ import org.springframework.stereotype.Repository;
 
 
 @Repository
-public interface RolesRepository extends CrudRepository<Roles, Long> {
+public interface RolesRepository extends CrudRepository<Role, Long> {
     
-    Optional<Roles> findByRole(String role);
+    Optional<Role> findByRole(String role);
     
 }

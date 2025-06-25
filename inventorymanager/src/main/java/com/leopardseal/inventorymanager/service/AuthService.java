@@ -14,10 +14,10 @@ public class AuthService {
     private UserRolesRepository userRolesRepository;
 
     public Boolean checkAuth(Long orgId){
-        return userRolesRepository.existsByUserIdAndOrgId(getUserId(), orgId);
+        return userRolesRepository.existsByMyUser_IdAndOrg_Id(getUserId(), orgId);
     }
     public Boolean checkAdminAuth(Long orgId){
-        return userRolesRepository.existsByUserIdAndOrgIdAndRoleId(getUserId(), orgId, new Long(1));
+        return userRolesRepository.existsByMyUser_IdAndOrg_IdAndRole_Id(getUserId(), orgId, new Long(1));
     }
     public Long getUserId(){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

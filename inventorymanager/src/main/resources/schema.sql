@@ -80,7 +80,7 @@ CREATE TABLE items(
 );
 CREATE TABLE tags(
     id INT IDENTITY PRIMARY KEY,
-    tag VARCHAR (32)
+    name VARCHAR (32)
 );
 CREATE TABLE item_tags(
     id INT IDENTITY PRIMARY KEY,

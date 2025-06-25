@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import com.leopardseal.inventorymanager.repository.*;
 import com.leopardseal.inventorymanager.service.AuthService;
 import com.leopardseal.inventorymanager.service.AzureBlobService;
-import com.leopardseal.inventorymanager.entity.Locations;
+import com.leopardseal.inventorymanager.entity.Location;
 import com.leopardseal.inventorymanager.entity.dto.SaveResponse;
 
 @RestController
@@ -30,18 +30,18 @@ public class LocationsController{
     
 
     @GetMapping("/get_locations/{org_id}")
-    public ResponseEntity<Iterable<Locations>> getLocations(@PathVariable("org_id") Long orgId){
+    public ResponseEntity<Iterable<Location>> getLocations(@PathVariable("org_id") Long orgId){
         if(authService.checkAuth(orgId)){
-            List<Locations> locations = locationsRepository.findAllLocationsByOrgId(orgId);
-            return new ResponseEntity<Iterable<Locations>>(locations, HttpStatus.OK);
+            List<Location> locations = locationsRepository.findAllByOrgId(orgId);
+            return new ResponseEntity<Iterable<Location>>(locations, HttpStatus.OK);
         }
         return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         
     }
 
     @GetMapping("/get_location/{location_id}")
-    public ResponseEntity<Locations> getLocationById(@PathVariable("location_id") Long locationId) {    
-        Optional<Locations> location = locationsRepository.findLocationById(locationId);
+    public ResponseEntity<Location> getLocationById(@PathVariable("location_id") Long locationId) {    
+        Optional<Location> location = locationsRepository.findById(locationId);
         if (location.get() != null) {
             if(authService.checkAuth(location.get().getOrgId())){
                 return ResponseEntity.ok(location.get());
@@ -54,11 +54,11 @@ public class LocationsController{
     }
 
     @PostMapping("/update_location/{img_changed}")
-    public ResponseEntity<SaveResponse> updateLocation(@RequestBody Locations location, @PathVariable("img_changed") Boolean imageChanged) {
+    public ResponseEntity<SaveResponse> updateLocation(@RequestBody Location location, @PathVariable("img_changed") Boolean imageChanged) {
         if(authService.checkAuth(location.getOrgId())){
             try {
                 String imgUrl = null;
-                Locations updatedLocation = locationsRepository.save(location);
+                Location updatedLocation = locationsRepository.save(location);
                 if(imageChanged){
                     if(updatedLocation.getImageUrl() == null){
                         imgUrl = azureBlobService.uploadImageWithSas(updatedLocation.getId(), "location", 1L);

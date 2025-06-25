@@ -29,7 +29,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.leopardseal.inventorymanager.entity.dto.LoginResponse;
-import com.leopardseal.inventorymanager.entity.MyUsers;
+import com.leopardseal.inventorymanager.entity.MyUser;
 
 @RestController
 public class LoginController {
@@ -59,7 +59,7 @@ public class LoginController {
             }
             Payload payload = idToken.getPayload();
             logger.info(payload.getEmail() + " logged in");
-            MyUsers user = myUsersRepository.findByEmail(payload.getEmail()).get();
+            MyUser user = myUsersRepository.findByEmail(payload.getEmail()).get();
             if(user == null){
                 return new ResponseEntity(HttpStatus.UNAUTHORIZED);
             }

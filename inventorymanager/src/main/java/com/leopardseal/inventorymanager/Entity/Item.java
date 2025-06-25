@@ -1,10 +1,18 @@
 package com.leopardseal.inventorymanager.entity;
 
-import org.springframework.data.annotation.Id;
+import java.util.List;
+
+
+import jakarta.persistence.Id; 
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,10 +26,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name = "items")
-public class Items{
+public class Item{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     private String name;

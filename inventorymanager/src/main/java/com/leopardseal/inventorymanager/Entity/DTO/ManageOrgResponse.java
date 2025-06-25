@@ -2,6 +2,9 @@ package com.leopardseal.inventorymanager.entity.dto;
 
 import java.util.List;
 
+import com.leopardseal.inventorymanager.entity.Invite;
+import com.leopardseal.inventorymanager.entity.UserRole;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,7 +15,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ManageOrgResponse {
     
-    private List<UserResponse> users;
+    private List<UserRole> users;
 
-    private List<UserResponse> invites;
+    private List<Invite> invites;
 }

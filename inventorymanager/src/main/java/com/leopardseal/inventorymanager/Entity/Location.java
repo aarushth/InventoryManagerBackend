@@ -1,7 +1,7 @@
 package com.leopardseal.inventorymanager.entity;
 
-import org.springframework.data.annotation.Id;
-
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,10 +17,11 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Boxes{
+@Table(name = "locations")
+public class Location{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     private String name;
@@ -29,9 +30,7 @@ public class Boxes{
 
     private String barcode;
 
-    private Long locationId;
-
-    private Long sizeId;
+    private String description;
 
     private String imageUrl;
 

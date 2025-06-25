@@ -1,28 +1,36 @@
 package com.leopardseal.inventorymanager.repository;
 
-import com.leopardseal.inventorymanager.entity.Items;
+import com.leopardseal.inventorymanager.entity.Item;
 
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.jdbc.repository.query.Query;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-
+import org.springframework.data.jpa.repository.EntityGraph;
 
 @Repository
-public interface ItemsRepository extends CrudRepository<Items, Long> {
+public interface ItemsRepository extends CrudRepository<Item, Long> {
     
     @EntityGraph(attributePaths = "tags")
-    List<Items> findAllItemsByOrgId(Long orgId);
+    List<Item> findAllByOrgId(Long orgId);
 
-    Optional<Items> findItemById(Long id);
+    Optional<Item> findById(Long id);
 
-    List<Items> findAllItemsByOrgIdAndBoxId(Long orgId, Long boxId);
+    List<Item> findAllByOrgIdAndBoxId(Long orgId, Long boxId);
 
-    @Query("SELECT i.id, i.name, i.org_id, i.barcode, i.description, i.box_id, i.quantity, i.alert, i.image_url FROM items i WHERE i.org_id = :orgId AND ((i.name LIKE :query) OR (i.barcode LIKE :query) OR (i.description LIKE :query))")
-    List<Items> findAllItemsByQuery(Long orgId, String query);
+    @Query("""
+        SELECT i
+        FROM Item i
+        WHERE i.orgId = :orgId AND (
+            i.name LIKE CONCAT('%', :query, '%') OR 
+            i.barcode LIKE CONCAT('%', :query, '%') OR 
+            i.description LIKE CONCAT('%', :query, '%')
+        )
+    """)
+    List<Item> findAllByQuery(Long orgId, String query);
 
-    @Query("SELECT i.id, i.name, i.org_id, i.barcode, i.description, i.box_id, i.quantity, i.alert, i.image_url FROM items i WHERE i.org_id = :orgId AND i.barcode = :barcode")
-    List<Items> findAllItemsByBarcode(Long orgId, String barcode);
+
+    List<Item> findAllByOrgIdAndBarcode(Long orgId, String barcode);
 }

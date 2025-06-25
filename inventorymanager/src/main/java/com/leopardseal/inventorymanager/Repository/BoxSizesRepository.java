@@ -5,11 +5,11 @@ import java.util.Optional;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import com.leopardseal.inventorymanager.entity.BoxSizes;
+import com.leopardseal.inventorymanager.entity.BoxSize;
 
 @Repository
-public interface BoxSizesRepository extends CrudRepository<BoxSizes, Long> {
+public interface BoxSizesRepository extends CrudRepository<BoxSize, Long> {
     
-    Optional<BoxSizes> findBySize(String size);
+    Optional<BoxSize> findBySize(String size);
     
 }
