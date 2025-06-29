@@ -29,14 +29,14 @@ public class JwtFilter extends OncePerRequestFilter {
 
 
 
-    private static final List<String> EXCLUDED_PATHS = List.of(
-        "/login"
-    );
+    // private static final List<String> EXCLUDED_PATHS = List.of(
+    //     "/login", "/delete"
+    // );
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getServletPath();
-        return EXCLUDED_PATHS.contains(path);
+        return path.startsWith("/login") || path.startsWith("/delete") || path.startsWith("/version");
     }
 
     @Override

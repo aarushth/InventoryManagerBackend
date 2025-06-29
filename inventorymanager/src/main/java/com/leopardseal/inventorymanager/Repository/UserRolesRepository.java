@@ -21,5 +21,8 @@ public interface UserRolesRepository extends CrudRepository<UserRole, Long> {
     @Transactional
     int deleteByMyUser_IdAndOrg_Id(Long userId, Long orgId);
     
+    @Transactional
+    int deleteByMyUser_Id(Long userId);
+    
     List<UserRole> findAllByOrg_Id(Long orgId);
 }

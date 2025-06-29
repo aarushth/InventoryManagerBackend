@@ -1,6 +1,7 @@
 package com.leopardseal.inventorymanager.controller;
 
 
+import java.lang.StackWalker.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -100,20 +101,22 @@ public class OrgsController{
         }
     }
 
-    @PostMapping("/invite_user/{org_id}")
-    public ResponseEntity inviteUser(@RequestBody String email, @RequestBody Role role, @PathVariable("org_id") Long orgId){
+    @PostMapping("/invite_user/{org_id}/{email}")
+    public ResponseEntity inviteUser(@PathVariable("email") String email, @RequestBody Role role, @PathVariable("org_id") Long orgId){
         if(authService.checkAdminAuth(orgId)){           
-            MyUser user = myUserRepository.findByEmail(email).get();
-            if(user == null){
-                user = new MyUser();
-                user.setEmail(email);
-                user = myUserRepository.save(user);
+            Optional<MyUser> user = myUserRepository.findByEmail(email);
+            MyUser userFin = new MyUser();
+            if(!user.isPresent()){
+                userFin.setEmail(email);
+                userFin = myUserRepository.save(userFin);
+            }else{
+                userFin = user.get();
             }
             Org org = orgRepository.findById(orgId).get();
 
             Invite invite = new Invite();
-            invite.setMyUser(user);
-            invite.setOrg(org);
+            invite.setMyUser(userFin);
+            invite.setOrg(org); 
             invite.setRole(role);
 
             invitesRepository.save(invite);

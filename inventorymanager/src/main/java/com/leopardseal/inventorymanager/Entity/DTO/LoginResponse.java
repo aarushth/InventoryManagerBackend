@@ -11,4 +11,5 @@ import lombok.Setter;
 public class LoginResponse {
     private String token;
     private MyUser user;
+    private Boolean toDelete;
 }

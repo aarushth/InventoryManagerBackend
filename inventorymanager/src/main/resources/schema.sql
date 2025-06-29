@@ -37,6 +37,10 @@ CREATE TABLE invites(
     CONSTRAINT FK_orgs_invites FOREIGN KEY(org_id) REFERENCES orgs(id),
     CONSTRAINT FK_roles_invites FOREIGN KEY(role_id) REFERENCES roles(id)
 );
+CREATE TABLE deletes(
+    id INT PRIMARY KEY,
+    CONSTRAINT FK_users_deletes FOREIGN KEY(id) REFERENCES my_users(id)
+);
 
 CREATE TABLE locations(
     id INT IDENTITY PRIMARY KEY,
